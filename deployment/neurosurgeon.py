@@ -12,27 +12,35 @@ def algo_neurosurgeon(minfo: model_info.ModelInfo, bandwidth: float, target: str
     """
     best = None
     split_index = 0
-    time_upload = [entry / bandwidth for entry in minfo.data_size]
     for index in range(len(minfo)):
-        upload_lat = time_upload[index]
         if target == 'latency':
-            local_lat = sum(minfo.edge_lat[:index + 1])
-            cloud_lat = sum(minfo.cloud_lat[index + 1:])
-            total_lat = local_lat + cloud_lat + upload_lat
-            if best is None or total_lat < best:
-                best = total_lat
-                split_index = index
+            cost, _ = calc_latency(minfo, index, bandwidth)
         elif target == 'energy':
-            energy = minfo.edge_energy
-            if not energy:
-                raise ValueError("Edge energy data is required for energy optimization.")
-            compute_watts = sum(minfo.edge_lat[i] * energy[i] for i in range(index + 1))
-            upload_watts = upload_power * upload_lat
-            total_watts = compute_watts + upload_watts
-            if best is None or total_watts < best:
-                best = total_watts
-                split_index = index
+            cost, _ = calc_energy(minfo, index, bandwidth, upload_power)
+        if best is None or cost < best:
+            best = cost
+            split_index = index
         else:
             raise ValueError(f"Unsupported target: {target}")
 
     return split_index
+
+def calc_latency(minfo: model_info.ModelInfo, index: int, bandwidth: float) -> tuple[float,tuple]:
+    local_lat = sum(minfo.edge_lat[:index+1])
+    cloud_lat = sum(minfo.cloud_lat[index+1:])
+    time_upload = minfo.data_size[index] / bandwidth
+
+    tmp = (local_lat, cloud_lat, time_upload)
+    return sum(tmp), tmp
+
+def calc_energy(minfo: model_info.ModelInfo, index: int, bandwidth: float, upload_power: float) -> tuple[float,tuple]:
+    energy = minfo.edge_energy
+    if not energy:
+        raise ValueError("Edge energy data is required for energy optimization.")
+    
+    time_upload = minfo.data_size[index] / bandwidth
+    compute_watts = (minfo.edge_lat[i] * energy[i] for i in range(index + 1))
+    upload_watts = upload_power * time_upload
+    
+    tmp = (compute_watts, upload_watts)
+    return tmp, sum(tmp)

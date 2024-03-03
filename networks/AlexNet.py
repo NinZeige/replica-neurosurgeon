@@ -4,7 +4,7 @@ from torch import nn
 
 def squeeze_alex(alex: models.AlexNet) -> nn.Module:
     flatten_alex = nn.Module()
-    numbering = 0
+    numbering = 1
     def unwrap(modu: nn.Module) -> None:
         nonlocal numbering  # Avoid UnboundLocalError
         for layers in modu.children():

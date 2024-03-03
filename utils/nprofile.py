@@ -7,12 +7,20 @@ SIZE_DUMP = 'size.json'
 TRACE_DUMP = 'chrome.json'
 LOCAL_LAT = 'local_lat'
 REMOTE_LAT = 'remote_lat'
+NPRO_SIZE = 'size'
 
 def profile_flatten(model: nn.Module, input: torch.Tensor, label:str) -> torch.Tensor:
     '''
     Profile the flatten network
     '''
     size_record = {}
+    # virtual input layer for algorithm
+    input_info = {
+        NPRO_SIZE: input.numel() * 4,
+        LOCAL_LAT: 0,
+    }
+    size_record['0--input'] = input_info
+
     with torch.no_grad():
         with profile(
             record_shapes=True,
@@ -24,7 +32,7 @@ def profile_flatten(model: nn.Module, input: torch.Tensor, label:str) -> torch.T
                     out:torch.Tensor = layer(out)
                     # record output shape
                     info = {
-                        'size': out.numel() * 4,    # assume all with float32 dtype
+                        NPRO_SIZE: out.numel() * 4,    # assume all with float32 dtype
                     }
                     size_record[name] = info
     print(prof.key_averages().table(sort_by="cpu_time", top_level_events_only=False))
@@ -38,7 +46,7 @@ def profile_flatten(model: nn.Module, input: torch.Tensor, label:str) -> torch.T
     for entry in trace_data:
         key = entry['name']
         if key in size_record:
-            size_record[key]['local_lat'] = entry['dur']
+            size_record[key][LOCAL_LAT] = entry['dur']
         
     save_name = f'{label}_{SIZE_DUMP}'
     with open(save_name, 'w') as file:

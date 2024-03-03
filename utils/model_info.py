@@ -1,7 +1,7 @@
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Iterable
 
 class ModelInfo:
-    def __init__(self, data: Union[List[Tuple[float, float, float]], List[Tuple[float, float, float, float]]]):
+    def __init__(self, data: Union[List[Iterable[float, float, float]], List[Iterable[float, float, float, float]]]):
         if not all(len(entry) == len(data[0]) for entry in data):
             raise ValueError("All tuples in data must have the same length")
         self.__data = data
