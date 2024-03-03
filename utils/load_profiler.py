@@ -1,5 +1,6 @@
 import json
 from model_info import ModelInfo
+from nprofile import *
 
 def load_dummy_profile(file: str) -> ModelInfo:
     with open(file, 'r') as f:
@@ -16,5 +17,11 @@ def load_dummy_profile(file: str) -> ModelInfo:
 
     return ModelInfo(data)
 
-def load_chrome_tracing(file: str) -> ModelInfo:
-    # pass
+def merge_profile(edge:dict, cloud: dict) -> dict:
+    merged = edge.copy()
+    for entry in edge.keys():
+        if entry not in cloud:
+            print(f'Warning: cloud dictionary doesn\'t contain key "{entry}"')
+            continue
+        merged[entry][REMOTE_LAT] = cloud[entry][LOCAL_LAT]
+    return merged

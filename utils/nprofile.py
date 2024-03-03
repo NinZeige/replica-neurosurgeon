@@ -5,6 +5,8 @@ import json
 
 SIZE_DUMP = 'size.json'
 TRACE_DUMP = 'chrome.json'
+LOCAL_LAT = 'local_lat'
+REMOTE_LAT = 'remote_lat'
 
 def profile_flatten(model: nn.Module, input: torch.Tensor, label:str) -> torch.Tensor:
     '''
@@ -32,6 +34,7 @@ def profile_flatten(model: nn.Module, input: torch.Tensor, label:str) -> torch.T
         trace_data:list = json.load(file)['traceEvents']
         assert type(trace_data) == list
     
+    # read from chrome profile
     for entry in trace_data:
         key = entry['name']
         if key in size_record:
