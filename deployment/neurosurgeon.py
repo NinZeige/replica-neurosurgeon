@@ -26,8 +26,8 @@ def algo_neurosurgeon(minfo: model_info.ModelInfo, bandwidth: float, target: str
     return split_index
 
 def calc_latency(minfo: model_info.ModelInfo, index: int, bandwidth: float) -> tuple[float,tuple]:
-    local_lat = sum(minfo.edge_lat[:index+1])
-    cloud_lat = sum(minfo.cloud_lat[index+1:])
+    local_lat = sum(minfo.edge_lat[:index+1]) / 1000**2    # from microsecond
+    cloud_lat = sum(minfo.cloud_lat[index+1:]) / 1000**2
     time_upload = minfo.data_size[index] / bandwidth
 
     tmp = (local_lat, cloud_lat, time_upload)
@@ -39,7 +39,7 @@ def calc_energy(minfo: model_info.ModelInfo, index: int, bandwidth: float, uploa
         raise ValueError("Edge energy data is required for energy optimization.")
     
     time_upload = minfo.data_size[index] / bandwidth
-    compute_watts = (minfo.edge_lat[i] * energy[i] for i in range(index + 1))
+    compute_watts = (minfo.edge_lat[i] * energy[i] / 1000**2 for i in range(index + 1))
     upload_watts = upload_power * time_upload
     
     tmp = (compute_watts, upload_watts)

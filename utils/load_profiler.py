@@ -1,6 +1,6 @@
 import json
-from model_info import ModelInfo
-from nprofile import *
+from .model_info import ModelInfo
+from .nprofile import *
 
 def load_dummy_profile(file: str) -> ModelInfo:
     with open(file, 'r') as f:
@@ -26,14 +26,15 @@ def merge_profile(edge:dict, cloud: dict) -> dict:
         merged[entry][REMOTE_LAT] = cloud[entry][LOCAL_LAT]
     return merged
 
-def load_profile(data: dict[str,dict]):
+def load_profile(data: dict[str,dict]) -> ModelInfo:
     tmp = {}
     for key in data.keys():
         num = key[:key.find('--')]
         local_lat = data[key][LOCAL_LAT]
         remote_lat = data[key][REMOTE_LAT]
         size = data[key][NPRO_SIZE]
-        tmp[num] = (local_lat, remote_lat, size)
+        tmp[int(num)] = (local_lat, remote_lat, size)
     result = []
     for i in range(len(data)):
         result.append(tmp[i])
+    return ModelInfo(result)

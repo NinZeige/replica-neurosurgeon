@@ -1,5 +1,4 @@
 from torchvision import models
-import torch
 from torch import nn
 
 def squeeze_alex(alex: models.AlexNet) -> nn.Module:
