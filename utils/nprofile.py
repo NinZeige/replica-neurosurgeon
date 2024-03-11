@@ -12,6 +12,7 @@ NPRO_SIZE = 'size'
 def profile_flatten(model: nn.Module, input: torch.Tensor, label:str) -> torch.Tensor:
     '''
     Profile the flatten network
+    这里输入的模型是被 "展平" 之后的DNN (比如flatten_alex()), 利用pytorch自带的跑分工具进行测试
     '''
     size_record = {}
     # virtual input layer for algorithm

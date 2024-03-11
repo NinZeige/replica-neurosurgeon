@@ -13,6 +13,7 @@ def algo_neurosurgeon(minfo: model_info.ModelInfo, bandwidth: float, target: str
     best = None
     split_index = 0
     for index in range(len(minfo)):
+        # 针对每一层计算代价 (延迟或能耗), 寻找最优方案
         if target == 'latency':
             cost, _ = calc_latency(minfo, index, bandwidth)
         elif target == 'energy':

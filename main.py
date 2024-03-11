@@ -26,8 +26,8 @@ def main():
         ]
     )
 
-    with Image.open(DOG_PATH) as dog:
-        image: torch.Tensor = transform(dog)
+    with Image.open(DOG_PATH) as img:
+        image: torch.Tensor = transform(img)
         image = image.unsqueeze(0)
         falex = VGG.flatten_vgg()
 
