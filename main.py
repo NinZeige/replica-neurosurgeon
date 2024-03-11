@@ -8,6 +8,7 @@ from utils import nprofile
 DOG_PATH = '/home/ninzeige/Downloads/Domestic_Goose.jpg'
 SIZE_DUMP = 'size.json'
 
+
 def main():
     with open('imagenet_classes.json', 'r') as f:
         in_table = json.load(f)
@@ -35,13 +36,6 @@ def main():
         _, indices = torch.topk(output, 5)
         print(f"Top 5 predicated classes: {lookup(indices[0])}")
 
-        
-def plot_nsg():
-    from utils import plot
-    plot.plot_latency('./alex_edge.json', 5000 * 1000, title='alex-5M')
-    plot.plot_latency('./alex_edge.json', 2000 * 1000, title='alex-2M')
-    plot.plot_latency('./alex_edge.json', 1000 * 1000, title='alex-1M')
-    plot.plot_latency('./alex_edge.json', 500 * 1000, title='alex-500K')
-  
+
 if __name__ == '__main__':
     main()
